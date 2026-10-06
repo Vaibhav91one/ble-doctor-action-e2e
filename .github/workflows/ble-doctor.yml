@@ -1,0 +1,26 @@
+# Written by `ble-doctor ci install`. On each pull request that touches a capture, report and gate only the
+# findings that are new compared with the base branch's copy of that capture.
+name: ble-doctor
+
+on:
+  pull_request:
+    paths:
+      - "captures/**/*.pcap"
+      - ".github/workflows/ble-doctor.yml"
+
+permissions:
+  contents: read
+  pull-requests: write # one summary comment, updated in place
+  security-events: write # SARIF upload to code scanning
+
+jobs:
+  ble-doctor:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # the base commit's copy of each capture is the baseline
+      - uses: Vaibhav91one/ble-doctor@v0.2.0
+        with:
+          captures: "captures/**/*.pcap"
+          fail-on: medium
